@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  form(action='/create', method='post')
+    p
+      label
+        input(type='radio' name='positive' value='1')
+        | positive
+      label
+        input(type='radio' name='positive' value='0')
+        | negative
+    p
+      label text &nbsp;
+        textarea(name='text')
+    p
+      label country &nbsp;
+        select(name='country')
+          option(value=1) belarus
+    p
+      label language &nbsp;
+        select(name='language')
+          option(value=1) russian
+    p
+      .g-recaptcha(data-sitekey='6LcrYykTAAAAALUnC_D2XQaQYK0gU-9mZzvpYZsD')
+    p
+      input(type='submit')

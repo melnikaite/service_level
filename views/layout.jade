@@ -1,0 +1,21 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='/javascripts/index.js')
+    script(src='//www.google.com/recaptcha/api.js')
+  body
+    a(href='/c/1/l/1') recent
+    | &nbsp;
+    a(href='/c/1/l/1/popular') popular
+    | &nbsp;
+    a(href='/new') add
+    | &nbsp;
+    select(onchange='')
+      option Belarus
+    | &nbsp;
+    select(onchange='')
+      option Russian
+    p
+      block content

@@ -1,0 +1,5 @@
+{
+  "development": {
+    "mongoose": "mongodb://localhost/service_level"
+  }
+}
