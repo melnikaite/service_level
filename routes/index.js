@@ -9,14 +9,16 @@ var recaptcha = new reCAPTCHA({
 var sanitizeHtml = require('sanitize-html');
 
 var calculateServiceLevel = function (results) {
-  var serviceLevel = {};
+  var serviceLevel = {total: 0};
   results.forEach(function (result) {
     serviceLevel[result._id] = result.count;
-    serviceLevel['total'] += result.count;
+    if ([0, 1].indexOf(result._id) != -1) {
+      serviceLevel['total'] += result.count;
+    }
   });
   return {
-    positive: serviceLevel[0] * 100 / serviceLevel['total'],
-    negative: serviceLevel[1] * 100 / serviceLevel['total']
+    positive: serviceLevel[1] * 100 / serviceLevel['total'],
+    negative: serviceLevel[0] * 100 / serviceLevel['total']
   }
 };
 
@@ -26,7 +28,6 @@ var renderPostsSortedBy = function (req, res, next, field, direction) {
   models.post.find({country: req.params.country, language: req.params.language})
     .sort(sort).skip(req.params.skip).limit(5)
     .exec(function (err, posts) {
-      console.log('exec');
       if (err) return next(err);
       models.post.aggregate({$group: {_id: '$country', count: {'$sum': 1}}}, function (err, results) {
         if (err) return next(err);

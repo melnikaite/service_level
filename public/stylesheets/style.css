@@ -8,8 +8,9 @@ a {
 .service-level-bar {
   position: fixed;
   width: 20px;
-  height: 80%;
-  top: 10%; }
+  height: 90%;
+  top: 5%;
+  left: 20px; }
   .service-level-bar .positive {
     background: green; }
   .service-level-bar .negative {
