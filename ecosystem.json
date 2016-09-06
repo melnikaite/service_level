@@ -2,7 +2,8 @@
   "apps": [
     {
       "name": "service_level",
-      "script": "./bin/www"
+      "script": "./bin/www",
+      "watch": true
     }
   ],
   "deploy": {
