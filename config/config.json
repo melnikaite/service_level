@@ -1,5 +1,8 @@
 {
   "development": {
-    "mongoose": "mongodb://localhost/service_level"
+    "mongoose": "mongodb://127.0.0.1/service_level"
+  },
+  "production": {
+    "mongoose": "mongodb://127.0.0.1/service_level"
   }
 }

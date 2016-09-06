@@ -36,7 +36,7 @@ var renderPostsSortedBy = function (req, res, next, field, direction) {
     });
 };
 
-router.post('/create', function (req, res, next) {
+router.get('/', function (req, res, next) {
   res.redirect('/c/1/l/1');
 });
 
