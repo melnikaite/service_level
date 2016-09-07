@@ -2,20 +2,25 @@ doctype html
 html
   head
     title= title
+    meta(name='viewport' content='width=device-width')
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='/javascripts/index.js')
-    script(src='//www.google.com/recaptcha/api.js')
+    script.
+      ServiceLevel.countrycode = '#{params.country}'
+      ServiceLevel.langcode = '#{params.language}'
   body
-    a(href='/c/1/l/1') recent
-    | &nbsp;
-    a(href='/c/1/l/1/popular') popular
-    | &nbsp;
-    a(href='/new') add
-    | &nbsp;
-    select(onchange='')
-      option Belarus
-    | &nbsp;
-    select(onchange='')
-      option Russian
+    a(href='/c/'+params.country+'/l/'+params.language) recent
+    | &#32;
+    a(href='/c/'+params.country+'/l/'+params.language+'/popular') popular
+    | &#32;
+    a(href='/c/'+params.country+'/l/'+params.language+'/new') add
+    | &#32;
+    select(onchange='ServiceLevel.changeCountry(this.value)')
+      each countrycode in Object.keys(countries)
+        option(value=countrycode, selected=params.country == countrycode)= countries[countrycode].native
+    | &#32;
+    select(onchange='ServiceLevel.changeLanguage(this.value)')
+      each langcode in languages.getAllLanguageCode()
+        option(value=langcode, selected=params.language == langcode)= languages.getLanguageInfo(langcode).nativeName
     p
       block content

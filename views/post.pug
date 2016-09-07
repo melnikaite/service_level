@@ -1,0 +1,7 @@
+.post-actions
+  a(href='/c/' + post.country + '/l/' + post.language + '/p/' + post.id) link
+  | &#32;
+  a(href='https://www.facebook.com/sharer/sharer.php?u=service-level.club/' + post.id, target='_blank') f
+  | &#32;
+  span.vote(onclick='ServiceLevel.vote("' + post.id + '")') +
+.post(class=post.positive ? 'positive' : 'negative')!=post.text.replace(/\r?\n/g, '<br>$&')

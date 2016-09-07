@@ -7,83 +7,107 @@ var recaptcha = new reCAPTCHA({
   secretKey: '6LcrYykTAAAAAMHDDoVXUEZ6_l6nWo8T3t-es9T1'
 });
 var sanitizeHtml = require('sanitize-html');
-
-var calculateServiceLevel = function (results) {
-  var serviceLevel = {total: 0};
-  results.forEach(function (result) {
-    serviceLevel[result._id] = result.count;
-    if ([0, 1].indexOf(result._id) != -1) {
-      serviceLevel['total'] += result.count;
-    }
-  });
-  return {
-    positive: serviceLevel[1] * 100 / serviceLevel['total'],
-    negative: serviceLevel[0] * 100 / serviceLevel['total']
-  }
-};
+var languages = require('languages');
+var countries = require('countries-list').countries;
 
 var renderPostsSortedBy = function (req, res, next, field, direction) {
   var sort = {};
   sort[field] = direction;
   models.post.find({country: req.params.country, language: req.params.language})
-    .sort(sort).skip(req.params.skip).limit(5)
+    .sort(sort).skip(req.params.skip).limit(100)
     .exec(function (err, posts) {
       if (err) return next(err);
-      models.post.aggregate({$group: {_id: '$country', count: {'$sum': 1}}}, function (err, results) {
-        if (err) return next(err);
-        var serviceLevel = calculateServiceLevel(results);
-        res.render('index', {title: 'Service Level', posts: posts, serviceLevel: serviceLevel});
+      res.render('index', {
+        title: 'Service Level',
+        posts: posts,
+        countries: countries,
+        languages: languages,
+        params: req.params
       });
     });
 };
 
 router.get('/', function (req, res, next) {
-  res.redirect('/c/1/l/1');
+  res.redirect('/c/BY/l/ru');
 });
 
 router.get('/c/:country/l/:language', function (req, res, next) {
-  renderPostsSortedBy(req, res, next, 'created_at', 1);
+  renderPostsSortedBy(req, res, next, 'created_at', -1);
 });
 
 router.get('/c/:country/l/:language/popular', function (req, res, next) {
-  renderPostsSortedBy(req, res, next, 'upvotes', 1);
+  renderPostsSortedBy(req, res, next, 'upvotes', -1);
 });
 
-router.get('/p/:id', function (req, res, next) {
+router.get('/c/:country/l/:language/p/:id', function (req, res, next) {
   models.post.findOne({_id: req.params.id}, function (err, post) {
     if (err) return next(err);
-    res.render('show', {title: 'Service Level', post: post});
+    res.render('show', {
+      title: 'Service Level',
+      post: post,
+      countries: countries,
+      languages: languages,
+      params: req.params
+    });
   });
 });
 
-router.put('/p/:id/vote', function (req, res, next) {
+router.put('/c/:country/l/:language/p/:id/vote', function (req, res, next) {
   models.post.update({_id: req.params.id}, {$inc: {upvotes: 1}}, function (err) {
     if (err) return next(err);
     res.send('OK');
   });
 });
 
-router.get('/new', function (req, res, next) {
-  res.render('new', {title: 'Service Level'});
+router.get('/c/:country/l/:language/new', function (req, res, next) {
+  res.render('new', {
+    title: 'Service Level',
+    countries: countries,
+    languages: languages,
+    params: req.params,
+    recaptcha: recaptcha
+  });
 });
 
-router.post('/create', function (req, res, next) {
+router.post('/c/:country/l/:language/create', function (req, res, next) {
   recaptcha.validateRequest(req)
     .then(function () {
-      console.log(req.body);
       models.post.create({
-        positive: !!req.body.positive,
+        positive: req.body.positive,
         text: sanitizeHtml(req.body.text),
-        country: req.body.country,
-        language: req.body.language
+        country: req.params.country,
+        language: req.params.language,
+        created_at: new Date()
       }, function (err, post) {
         if (err) return next(err);
-        res.redirect('/p/' + post.id);
+        res.redirect('/c/' + post.country + '/l/' + post.language + '/p/' + post.id);
       });
     })
     .catch(function (errorCodes) {
       next(recaptcha.translateErrors(errorCodes));
     });
+});
+
+router.get('/c/:country/l/:language/level', function (req, res, next) {
+  models.post.aggregate([{$match: {country: req.params.country}}, {
+    $group: {
+      _id: '$positive',
+      count: {'$sum': 1}
+    }
+  }], function (err, results) {
+    if (err) return next(err);
+
+    var serviceLevel = {total: 0};
+    results.forEach(function (result) {
+      serviceLevel[result._id] = result.count;
+      serviceLevel['total'] += result.count;
+    });
+
+    res.render('service-level', {
+      positive: (serviceLevel[true] || 0) * 100 / serviceLevel['total'],
+      negative: (serviceLevel[false] || 0) * 100 / serviceLevel['total']
+    });
+  });
 });
 
 module.exports = router;

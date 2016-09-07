@@ -1,26 +1,20 @@
 extends layout
 
 block content
-  form(action='/create', method='post')
+  script(src='//www.google.com/recaptcha/api.js')
+
+  form(action='/c/'+params.country+'/l/'+params.language+'/create', method='post')
     p
       label
-        input(type='radio' name='positive' value='1')
-        | positive
+        input(type='radio' name='positive' value='true')
+        | Positive
       label
-        input(type='radio' name='positive' value='0')
-        | negative
+        input(type='radio' name='positive' value='false')
+        | Negative
     p
-      label text &nbsp;
+      label Text &#32;
         textarea(name='text')
     p
-      label country &nbsp;
-        select(name='country')
-          option(value=1) belarus
-    p
-      label language &nbsp;
-        select(name='language')
-          option(value=1) russian
-    p
-      .g-recaptcha(data-sitekey='6LcrYykTAAAAALUnC_D2XQaQYK0gU-9mZzvpYZsD')
+      .g-recaptcha(data-sitekey=recaptcha.config.siteKey)
     p
       input(type='submit')

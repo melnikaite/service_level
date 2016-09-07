@@ -1,9 +1,10 @@
 var mongoose = require('mongoose');
 
 module.exports = mongoose.Schema({
-  upvotes: Number,
-  positive: Boolean,
+  upvotes: {type: Number, index: true},
+  positive: {type: Boolean, index: true},
   text: String,
-  country: Number,
-  language: Number
+  country: {type: String, index: true},
+  language: {type: String, index: true},
+  created_at: {type: Date, index: true}
 });

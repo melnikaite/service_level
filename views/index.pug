@@ -1,12 +1,5 @@
 extends layout
 
 block content
-  include service-level
-
   each post in posts
-    a(href='/p/' + post.id) link
-    | &nbsp;
-    a(href='https://www.facebook.com/sharer/sharer.php?u=service-level.club/' + post.id, target='_blank') f
-    | &nbsp;
-    span(onclick='ServiceLevel.vote("' + post.id + '")') +
-    .post!=post.text.replace(/\r?\n/g, '<br>$&')
+    include post
