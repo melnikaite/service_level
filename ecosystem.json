@@ -2,18 +2,20 @@
   "apps": [
     {
       "name": "service_level",
-      "script": "./bin/www",
-      "watch": true
+      "script": "./bin/www"
     }
   ],
   "deploy": {
     "production": {
       "user": "root",
       "host": [
-        "163.172.139.191"
+        {
+          "host": "185.65.139.226",
+          "port": "2244"
+        }
       ],
       "ref": "origin/master",
-      "repo": "git@github.com:melnikaite/service_level.git",
+      "repo": "https://github.com/melnikaite/service_level.git",
       "path": "/root/service_level",
       "ssh_options": "StrictHostKeyChecking=no",
       "post-deploy": "npm install && pm2 startOrRestart ecosystem.json --env production",
